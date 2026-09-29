@@ -1,5 +1,8 @@
 package controller;
 
+// NUEVO: necesario para devolver una lista
+import java.util.List;
+
 import model.Libro;
 import model.LibroRepository;
 
@@ -52,5 +55,18 @@ public class LibroController {
     public Libro buscarLibro(int id) {
 
         return repository.buscarPorId(id);
+    }
+
+    // =====================================================
+    // INCREMENTO 3 - MARIO: VER TODOS LOS LIBROS
+    // =====================================================
+
+    /*
+     * Solicita al repositorio todos los
+     * libros registrados en el sistema.
+     */
+    public List<Libro> listarLibros() {
+
+        return repository.listarTodos();
     }
 }

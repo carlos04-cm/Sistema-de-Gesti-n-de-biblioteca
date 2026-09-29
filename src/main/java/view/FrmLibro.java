@@ -43,6 +43,13 @@ public class FrmLibro extends JFrame {
     private JButton btnMostrarBusqueda;
 
     // =====================================================
+    // INCREMENTO 3 - MARIO: VER TODOS LOS LIBROS
+    // =====================================================
+    // Este botón abre una nueva ventana con una tabla
+    // que muestra todos los libros registrados.
+    private JButton btnVerTodos;
+
+    // =====================================================
     // BÚSQUEDA
     // =====================================================
 
@@ -591,6 +598,18 @@ public class FrmLibro extends JFrame {
                         150
                 );
 
+        // =================================================
+        // INCREMENTO 3 - MARIO: BOTÓN VER TODOS LOS LIBROS
+        // =================================================
+        // Se crea el botón que permitirá abrir la ventana
+        // donde se mostrarán todos los libros en una tabla.
+        btnVerTodos =
+                crearBoton(
+                        "Ver todos los libros",
+                        AZUL_BOTON,
+                        175
+                );
+
         botones.add(
                 btnRegistrar
         );
@@ -601,6 +620,11 @@ public class FrmLibro extends JFrame {
 
         botones.add(
                 btnMostrarBusqueda
+        );
+
+        // Agregamos el nuevo botón de Mario al panel.
+        botones.add(
+                btnVerTodos
         );
 
         panel.add(
@@ -621,6 +645,12 @@ public class FrmLibro extends JFrame {
 
         btnMostrarBusqueda.addActionListener(
                 e -> mostrarOcultarBusqueda()
+        );
+
+        // Al hacer clic se abre la ventana que contiene
+        // el listado completo de libros registrados.
+        btnVerTodos.addActionListener(
+                e -> abrirListaLibros()
         );
 
         return panel;
@@ -941,6 +971,23 @@ public class FrmLibro extends JFrame {
         );
 
         return panel;
+    }
+
+    // =====================================================
+    // INCREMENTO 3 - MARIO: ABRIR LISTA DE LIBROS
+    // =====================================================
+
+    /**
+     * Abre la ventana FrmListaLibros.
+     * Se envía el mismo controlador para que la nueva
+     * ventana pueda consultar los libros almacenados.
+     */
+    private void abrirListaLibros() {
+
+        FrmListaLibros ventana =
+                new FrmListaLibros(controller);
+
+        ventana.setVisible(true);
     }
 
     // =====================================================
