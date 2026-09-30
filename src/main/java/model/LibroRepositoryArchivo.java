@@ -226,4 +226,139 @@ public class LibroRepositoryArchivo
         // Retornamos todos los libros encontrados
         return libros;
     }
+
+    // =====================================================
+    // INCREMENTO 3 - CARLOS: ACTUALIZAR LIBRO
+    // =====================================================
+
+    @Override
+    public boolean actualizar(Libro libroActualizado) {
+
+        /*
+         * Aprovechamos el método listarTodos() de Mario
+         * para obtener los libros que ya están registrados.
+         */
+        List<Libro> libros =
+                listarTodos();
+
+        boolean encontrado = false;
+
+        /*
+         * Recorremos la lista hasta encontrar
+         * el libro que tenga el mismo ID.
+         */
+        for (int i = 0; i < libros.size(); i++) {
+
+            Libro libro =
+                    libros.get(i);
+
+            if (libro.getId()
+                    == libroActualizado.getId()) {
+
+                /*
+                 * Reemplazamos el libro anterior
+                 * por el objeto que contiene
+                 * los datos actualizados.
+                 */
+                libros.set(
+                        i,
+                        libroActualizado
+                );
+
+                encontrado = true;
+                break;
+            }
+        }
+
+        // Si el ID no fue encontrado, no modificamos el archivo.
+        if (!encontrado) {
+            return false;
+        }
+
+        /*
+         * Reescribimos libros.txt con la lista
+         * que ya contiene el libro actualizado.
+         */
+        guardarTodos(libros);
+
+        return true;
+    }
+
+    // =====================================================
+    // INCREMENTO 3 - CARLOS: ELIMINAR LIBRO
+    // =====================================================
+
+    @Override
+    public boolean eliminar(int id) {
+
+        // Obtenemos todos los libros registrados.
+        List<Libro> libros =
+                listarTodos();
+
+        /*
+         * Eliminamos de la lista el libro
+         * cuyo ID coincida con el seleccionado.
+         */
+        boolean eliminado =
+                libros.removeIf(
+                        libro -> libro.getId() == id
+                );
+
+        // Si no encontramos el ID, no modificamos el archivo.
+        if (!eliminado) {
+            return false;
+        }
+
+        /*
+         * Guardamos nuevamente la lista.
+         * El libro eliminado ya no estará en libros.txt.
+         */
+        guardarTodos(libros);
+
+        return true;
+    }
+
+    // =====================================================
+    // MÉTODO AUXILIAR - CARLOS
+    // Se utiliza para ACTUALIZAR y ELIMINAR.
+    // =====================================================
+
+    private void guardarTodos(
+            List<Libro> libros) {
+
+        /*
+         * false indica que el archivo se reescribirá
+         * completamente en lugar de agregar líneas al final.
+         */
+        try (
+            FileWriter archivo =
+                    new FileWriter(
+                            nombreArchivo,
+                            false
+                    );
+
+            PrintWriter escritor =
+                    new PrintWriter(archivo)
+        ) {
+
+            // Guardamos nuevamente cada libro de la lista.
+            for (Libro libro : libros) {
+
+                escritor.println(
+                        libro.getId() + ";" +
+                        libro.getTitulo() + ";" +
+                        libro.getAutor() + ";" +
+                        libro.getCategoria() + ";" +
+                        libro.isDisponible()
+                );
+            }
+
+        } catch (IOException e) {
+
+            throw new RuntimeException(
+                    "Error al actualizar el archivo de libros.",
+                    e
+            );
+        }
+    }
 }

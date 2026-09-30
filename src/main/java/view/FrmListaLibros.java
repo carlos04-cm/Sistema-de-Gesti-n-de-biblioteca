@@ -7,16 +7,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -208,10 +211,6 @@ public class FrmListaLibros extends JFrame {
         // TABLA
         // =================================================
 
-        /*
-         * Columnas que aparecerán
-         * en la tabla.
-         */
         String[] columnas = {
             "ID",
             "Título",
@@ -220,13 +219,6 @@ public class FrmListaLibros extends JFrame {
             "Disponibilidad"
         };
 
-        /*
-         * Creamos el modelo de la tabla.
-         *
-         * isCellEditable retorna false
-         * para evitar modificar los datos
-         * directamente desde la tabla.
-         */
         modeloTabla =
                 new DefaultTableModel(
                         columnas,
@@ -242,13 +234,11 @@ public class FrmListaLibros extends JFrame {
             }
         };
 
-        // Creamos la tabla
         tablaLibros =
                 new JTable(
                         modeloTabla
                 );
 
-        // Altura de las filas
         tablaLibros.setRowHeight(
                 28
         );
@@ -261,7 +251,6 @@ public class FrmListaLibros extends JFrame {
                 )
         );
 
-        // Diseño del encabezado
         tablaLibros
                 .getTableHeader()
                 .setFont(
@@ -288,10 +277,6 @@ public class FrmListaLibros extends JFrame {
                 BORDE
         );
 
-        /*
-         * JScrollPane permite desplazarse
-         * cuando existen muchos libros.
-         */
         JScrollPane scroll =
                 new JScrollPane(
                         tablaLibros
@@ -319,11 +304,8 @@ public class FrmListaLibros extends JFrame {
         );
 
         /*
-         * Este botón vuelve a consultar
-         * libros.txt y actualiza la tabla.
-         *
-         * NO actualiza un libro.
-         * Solamente actualiza el listado.
+         * Botón creado por Mario.
+         * Vuelve a cargar la información de la tabla.
          */
         JButton btnActualizarLista =
                 crearBoton(
@@ -331,25 +313,63 @@ public class FrmListaLibros extends JFrame {
                         AZUL
                 );
 
-        // Botón para cerrar la ventana
+        // =================================================
+        // INCREMENTO 3 - CARLOS
+        // NUEVOS BOTONES: ACTUALIZAR Y ELIMINAR LIBRO
+        // =================================================
+
+        JButton btnActualizarLibro =
+                crearBoton(
+                        "Actualizar libro",
+                        AZUL_OSCURO
+                );
+
+        JButton btnEliminarLibro =
+                crearBoton(
+                        "Eliminar libro",
+                        new Color(198, 40, 40)
+                );
+
         JButton btnCerrar =
                 crearBoton(
                         "Cerrar",
                         GRIS
                 );
 
-        // Recargar la tabla
+        // Botón de Mario: vuelve a cargar la tabla
         btnActualizarLista.addActionListener(
                 e -> cargarLibros()
         );
 
-        // Cerrar esta ventana
+        // =================================================
+        // INCREMENTO 3 - CARLOS
+        // EVENTOS DE LOS NUEVOS BOTONES
+        // =================================================
+
+        btnActualizarLibro.addActionListener(
+                e -> actualizarLibroSeleccionado()
+        );
+
+        btnEliminarLibro.addActionListener(
+                e -> eliminarLibroSeleccionado()
+        );
+
         btnCerrar.addActionListener(
                 e -> dispose()
         );
 
         panelBotones.add(
                 btnActualizarLista
+        );
+
+        // NUEVO - CARLOS
+        panelBotones.add(
+                btnActualizarLibro
+        );
+
+        // NUEVO - CARLOS
+        panelBotones.add(
+                btnEliminarLibro
         );
 
         panelBotones.add(
@@ -386,28 +406,15 @@ public class FrmListaLibros extends JFrame {
      */
     private void cargarLibros() {
 
-        /*
-         * Primero limpiamos la tabla
-         * para evitar registros repetidos.
-         */
         modeloTabla.setRowCount(
                 0
         );
 
         try {
 
-            /*
-             * Solicitamos al controlador
-             * todos los libros registrados.
-             */
             List<Libro> libros =
                     controller.listarLibros();
 
-            /*
-             * Si la lista está vacía,
-             * significa que todavía no existen
-             * libros registrados.
-             */
             if (libros.isEmpty()) {
 
                 JOptionPane.showMessageDialog(
@@ -420,24 +427,13 @@ public class FrmListaLibros extends JFrame {
                 return;
             }
 
-            /*
-             * Recorremos todos los libros.
-             */
             for (Libro libro : libros) {
 
-                /*
-                 * Convertimos el boolean
-                 * en un texto más comprensible.
-                 */
                 String disponibilidad =
                         libro.isDisponible()
                                 ? "Disponible"
                                 : "No disponible";
 
-                /*
-                 * Agregamos una nueva fila
-                 * con los datos del libro.
-                 */
                 modeloTabla.addRow(
                         new Object[]{
                             libro.getId(),
@@ -454,6 +450,363 @@ public class FrmListaLibros extends JFrame {
             JOptionPane.showMessageDialog(
                     this,
                     "No fue posible cargar los libros.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    // =====================================================
+    // INCREMENTO 3 - CARLOS: ACTUALIZAR LIBRO
+    // =====================================================
+
+    /**
+     * Permite actualizar el libro seleccionado en la tabla.
+     * El ID se conserva y se pueden modificar el título,
+     * autor, categoría y disponibilidad.
+     */
+    private void actualizarLibroSeleccionado() {
+
+        // Obtenemos la fila seleccionada
+        int filaSeleccionada =
+                tablaLibros.getSelectedRow();
+
+        /*
+         * -1 significa que el usuario
+         * todavía no ha seleccionado un libro.
+         */
+        if (filaSeleccionada == -1) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione un libro de la tabla para actualizar.",
+                    "Libro no seleccionado",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        // Obtenemos el ID del libro seleccionado
+        int id =
+                Integer.parseInt(
+                        modeloTabla
+                                .getValueAt(
+                                        filaSeleccionada,
+                                        0
+                                )
+                                .toString()
+                );
+
+        // Obtenemos los datos actuales
+        String tituloActual =
+                modeloTabla
+                        .getValueAt(
+                                filaSeleccionada,
+                                1
+                        )
+                        .toString();
+
+        String autorActual =
+                modeloTabla
+                        .getValueAt(
+                                filaSeleccionada,
+                                2
+                        )
+                        .toString();
+
+        String categoriaActual =
+                modeloTabla
+                        .getValueAt(
+                                filaSeleccionada,
+                                3
+                        )
+                        .toString();
+
+        boolean disponibleActual =
+                modeloTabla
+                        .getValueAt(
+                                filaSeleccionada,
+                                4
+                        )
+                        .toString()
+                        .equalsIgnoreCase(
+                                "Disponible"
+                        );
+
+        /*
+         * Creamos los campos del formulario
+         * con los datos actuales del libro.
+         */
+        JTextField txtTitulo =
+                new JTextField(
+                        tituloActual
+                );
+
+        JTextField txtAutor =
+                new JTextField(
+                        autorActual
+                );
+
+        JTextField txtCategoria =
+                new JTextField(
+                        categoriaActual
+                );
+
+        JCheckBox chkDisponible =
+                new JCheckBox(
+                        "Disponible",
+                        disponibleActual
+                );
+
+        JPanel panel =
+                new JPanel(
+                        new GridLayout(
+                                0,
+                                1,
+                                5,
+                                5
+                        )
+                );
+
+        /*
+         * El ID solamente se muestra.
+         * No permitimos modificarlo.
+         */
+        panel.add(
+                new JLabel(
+                        "ID: " + id
+                )
+        );
+
+        panel.add(
+                new JLabel(
+                        "Título:"
+                )
+        );
+
+        panel.add(
+                txtTitulo
+        );
+
+        panel.add(
+                new JLabel(
+                        "Autor:"
+                )
+        );
+
+        panel.add(
+                txtAutor
+        );
+
+        panel.add(
+                new JLabel(
+                        "Categoría:"
+                )
+        );
+
+        panel.add(
+                txtCategoria
+        );
+
+        panel.add(
+                chkDisponible
+        );
+
+        /*
+         * Mostramos el formulario.
+         * El usuario puede aceptar o cancelar.
+         */
+        int opcion =
+                JOptionPane.showConfirmDialog(
+                        this,
+                        panel,
+                        "Actualizar libro",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+        // Si cancela, no hacemos ningún cambio
+        if (opcion != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        // Obtenemos la nueva información
+        String nuevoTitulo =
+                txtTitulo.getText().trim();
+
+        String nuevoAutor =
+                txtAutor.getText().trim();
+
+        String nuevaCategoria =
+                txtCategoria.getText().trim();
+
+        // Validamos campos vacíos
+        if (nuevoTitulo.isEmpty()
+                || nuevoAutor.isEmpty()
+                || nuevaCategoria.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Debe completar todos los campos.",
+                    "Campos incompletos",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        try {
+
+            /*
+             * Enviamos los nuevos datos
+             * al controlador.
+             */
+            controller.actualizarLibro(
+                    id,
+                    nuevoTitulo,
+                    nuevoAutor,
+                    nuevaCategoria,
+                    chkDisponible.isSelected()
+            );
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El libro fue actualizado correctamente.",
+                    "Actualización exitosa",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            /*
+             * Recargamos la tabla para que
+             * aparezcan inmediatamente los cambios.
+             */
+            cargarLibros();
+
+        } catch (RuntimeException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    // =====================================================
+    // INCREMENTO 3 - CARLOS: ELIMINAR LIBRO
+    // =====================================================
+
+    /**
+     * Elimina el libro seleccionado.
+     * Antes de eliminar solicita confirmación.
+     */
+    private void eliminarLibroSeleccionado() {
+
+        int filaSeleccionada =
+                tablaLibros.getSelectedRow();
+
+        // Validamos que el usuario seleccione un libro
+        if (filaSeleccionada == -1) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione un libro de la tabla para eliminar.",
+                    "Libro no seleccionado",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        // Obtenemos el ID
+        int id =
+                Integer.parseInt(
+                        modeloTabla
+                                .getValueAt(
+                                        filaSeleccionada,
+                                        0
+                                )
+                                .toString()
+                );
+
+        // Obtenemos el título para mostrarlo en la confirmación
+        String titulo =
+                modeloTabla
+                        .getValueAt(
+                                filaSeleccionada,
+                                1
+                        )
+                        .toString();
+
+        /*
+         * Solicitamos confirmación para evitar
+         * eliminar un libro accidentalmente.
+         */
+        // =====================================================
+// INCREMENTO 3 - CARLOS
+// CONFIRMACIÓN DE ELIMINACIÓN EN ESPAÑOL
+// =====================================================
+
+// Opciones que aparecerán en la ventana
+Object[] opciones = {
+    "Sí",
+    "No"
+};
+
+            /*
+             * Mostramos una ventana de confirmación
+             * con las opciones Sí y No en español.
+             */
+            int confirmacion =
+                    JOptionPane.showOptionDialog(
+                            this,
+                            "¿Está seguro de eliminar el libro '"
+                                    + titulo
+                                    + "' con ID "
+                                    + id
+                                    + "?",
+                            "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE,
+                            null,
+                            opciones,
+                            opciones[1]
+                    );
+
+            // La opción 0 corresponde a "Sí".
+            // Si selecciona "No" o cierra la ventana,
+            // se cancela la eliminación.
+            if (confirmacion != 0) {
+                return;
+            }
+
+        try {
+
+            // Solicitamos al controlador eliminar el libro
+            controller.eliminarLibro(
+                    id
+            );
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El libro fue eliminado correctamente.",
+                    "Eliminación exitosa",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            /*
+             * Recargamos la tabla para retirar
+             * inmediatamente el libro eliminado.
+             */
+            cargarLibros();
+
+        } catch (RuntimeException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );

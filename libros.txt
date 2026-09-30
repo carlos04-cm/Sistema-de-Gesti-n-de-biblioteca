@@ -1,6 +1,2 @@
-
-
-1;Cien años de soledad;Gabriel Garcia Marques;Literatura;true
-15;Pinocho;Carlo Collodi;Cuento;true
-
+15;Pinocho;Carlos Collodi;Cuento;true
 45;El alquimista;Pablo Coelho;Novela;true
