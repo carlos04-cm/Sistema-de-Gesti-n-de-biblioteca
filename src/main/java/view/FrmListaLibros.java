@@ -1,214 +1,437 @@
 package view;
 
 import controller.LibroController;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
-
 import model.Libro;
 
-/**
- * =========================================================
- * INCREMENTO 3 - MARIO
- * FUNCIONALIDAD: VER TODOS LOS LIBROS
- * =========================================================
- *
- * Esta ventana permite visualizar en una tabla
- * todos los libros registrados en el sistema.
- */
-public class FrmListaLibros extends JFrame {
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
-    // Controlador que permite consultar los libros
+import java.awt.*;
+import java.util.List;
+import java.util.regex.Pattern;
+
+public class FrmListaLibros extends JPanel {
+
+    // =====================================================
+    // CONTROLADOR
+    // =====================================================
+
     private final LibroController controller;
 
-    // Tabla donde se mostrarán los libros
-    private JTable tablaLibros;
+    // =====================================================
+    // COMPONENTES
+    // =====================================================
 
-    // Modelo utilizado para manejar las filas de la tabla
+    private JTable tablaLibros;
     private DefaultTableModel modeloTabla;
 
-    // Colores utilizados en la interfaz
-    private final Color AZUL =
-            new Color(41, 98, 255);
+    private JTextField txtBuscar;
+
+    private JLabel lblTotal;
+
+    private TableRowSorter<DefaultTableModel> ordenador;
+
+    // =====================================================
+    // COLORES
+    // =====================================================
 
     private final Color AZUL_OSCURO =
-            new Color(25, 55, 109);
+            new Color(20, 55, 84);
 
-    private final Color GRIS =
-            new Color(108, 117, 125);
+    private final Color AZUL_ACTIVO =
+            new Color(38, 105, 150);
+
+    private final Color ROJO =
+            new Color(198, 40, 40);
 
     private final Color FONDO =
             new Color(245, 247, 250);
 
-    private final Color BORDE =
-            new Color(220, 225, 230);
+    private final Color TEXTO =
+            new Color(35, 45, 55);
 
-    /**
-     * Constructor.
-     *
-     * Recibe el mismo controlador utilizado
-     * por la ventana principal.
-     */
+    private final Color TEXTO_SECUNDARIO =
+            new Color(100, 112, 123);
+
+    private final Color BORDE =
+            new Color(215, 222, 228);
+
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
+
     public FrmListaLibros(
             LibroController controller) {
 
         this.controller = controller;
 
-        configurarVentana();
-
         crearInterfaz();
 
-        // Al abrir la ventana cargamos los libros
         cargarLibros();
     }
 
-    /**
-     * Configuración de la ventana.
-     */
-    private void configurarVentana() {
+    // =====================================================
+    // CREAR INTERFAZ
+    // =====================================================
 
-        setTitle(
-                "Libros registrados"
+    private void crearInterfaz() {
+
+        setLayout(
+                new BorderLayout()
         );
 
-        setSize(
-                850,
-                500
+        setBackground(
+                FONDO
         );
 
-        // Centrar ventana
-        setLocationRelativeTo(null);
-
-        /*
-         * Cierra solamente esta ventana.
-         * La ventana principal continúa abierta.
-         */
-        setDefaultCloseOperation(
-                JFrame.DISPOSE_ON_CLOSE
-        );
-
-        setMinimumSize(
-                new Dimension(
-                        750,
-                        450
+        setBorder(
+                new EmptyBorder(
+                        22,
+                        28,
+                        22,
+                        28
                 )
+        );
+
+        add(
+                crearContenido(),
+                BorderLayout.CENTER
         );
     }
 
-    /**
-     * Crea todos los componentes visuales.
-     */
-    private void crearInterfaz() {
+    // =====================================================
+    // CONTENIDO PRINCIPAL
+    // =====================================================
 
-        // PANEL PRINCIPAL
-        JPanel panelPrincipal =
+    private JPanel crearContenido() {
+
+        JPanel contenido =
                 new JPanel(
                         new BorderLayout(
-                                15,
+                                0,
                                 15
                         )
                 );
 
-        panelPrincipal.setBackground(
+        contenido.setBackground(
                 FONDO
         );
 
-        panelPrincipal.setBorder(
-                BorderFactory.createEmptyBorder(
-                        20,
-                        20,
-                        20,
-                        20
-                )
-        );
-
         // =================================================
-        // ENCABEZADO
+        // PARTE SUPERIOR
         // =================================================
 
-        JPanel panelEncabezado =
-                new JPanel(
-                        new BorderLayout()
-                );
-
-        panelEncabezado.setBackground(
-                FONDO
-        );
-
-        // Título de la ventana
-        JLabel lblTitulo =
-                new JLabel(
-                        "LIBROS REGISTRADOS"
-                );
-
-        lblTitulo.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        24
-                )
-        );
-
-        lblTitulo.setForeground(
-                AZUL_OSCURO
-        );
-
-        lblTitulo.setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
-
-        // Descripción
-        JLabel lblDescripcion =
-                new JLabel(
-                        "Listado de todos los libros registrados en el sistema"
-                );
-
-        lblDescripcion.setFont(
-                new Font(
-                        "Arial",
-                        Font.PLAIN,
-                        14
-                )
-        );
-
-        lblDescripcion.setForeground(
-                GRIS
-        );
-
-        lblDescripcion.setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
-
-        panelEncabezado.add(
-                lblTitulo,
+        contenido.add(
+                crearParteSuperior(),
                 BorderLayout.NORTH
-        );
-
-        panelEncabezado.add(
-                lblDescripcion,
-                BorderLayout.SOUTH
         );
 
         // =================================================
         // TABLA
+        // =================================================
+
+        contenido.add(
+                crearPanelTabla(),
+                BorderLayout.CENTER
+        );
+
+        // =================================================
+        // PARTE INFERIOR
+        // =================================================
+
+        contenido.add(
+                crearPanelInferior(),
+                BorderLayout.SOUTH
+        );
+
+        return contenido;
+    }
+
+    // =====================================================
+    // PARTE SUPERIOR
+    // TÍTULO + BÚSQUEDA
+    // =====================================================
+
+    private JPanel crearParteSuperior() {
+
+        JPanel superior =
+                new JPanel();
+
+        superior.setLayout(
+                new BoxLayout(
+                        superior,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        superior.setBackground(
+                FONDO
+        );
+
+        // =================================================
+        // TÍTULO
+        // =================================================
+
+        JLabel titulo =
+                new JLabel(
+                        "LIBROS REGISTRADOS"
+                );
+
+        titulo.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        21
+                )
+        );
+
+        titulo.setForeground(
+                AZUL_OSCURO
+        );
+
+        titulo.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        // =================================================
+        // DESCRIPCIÓN
+        // =================================================
+
+        JLabel descripcion =
+                new JLabel(
+                        "Consulta, busca, actualiza o elimina los libros registrados."
+                );
+
+        descripcion.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        descripcion.setForeground(
+                TEXTO_SECUNDARIO
+        );
+
+        descripcion.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        superior.add(
+                titulo
+        );
+
+        superior.add(
+                Box.createVerticalStrut(5)
+        );
+
+        superior.add(
+                descripcion
+        );
+
+        superior.add(
+                Box.createVerticalStrut(18)
+        );
+
+        // =================================================
+        // BÚSQUEDA
+        // =================================================
+
+        JPanel busqueda =
+                crearPanelBusqueda();
+
+        busqueda.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        superior.add(
+                busqueda
+        );
+
+        return superior;
+    }
+
+    // =====================================================
+    // PANEL DE BÚSQUEDA
+    // =====================================================
+
+    private JPanel crearPanelBusqueda() {
+
+        JPanel panel =
+                new JPanel(
+                        new BorderLayout(
+                                12,
+                                0
+                        )
+                );
+
+        panel.setBackground(
+                Color.WHITE
+        );
+
+        panel.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        72
+                )
+        );
+
+        panel.setPreferredSize(
+                new Dimension(
+                        760,
+                        72
+                )
+        );
+
+        panel.setBorder(
+                BorderFactory.createCompoundBorder(
+
+                        BorderFactory.createLineBorder(
+                                BORDE
+                        ),
+
+                        new EmptyBorder(
+                                15,
+                                18,
+                                15,
+                                18
+                        )
+                )
+        );
+
+        // =================================================
+        // ETIQUETA
+        // =================================================
+
+        JLabel lblBuscar =
+                new JLabel(
+                        "Buscar:"
+                );
+
+        lblBuscar.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        13
+                )
+        );
+
+        lblBuscar.setForeground(
+                AZUL_OSCURO
+        );
+
+        // =================================================
+        // CAMPO
+        // =================================================
+
+        txtBuscar =
+                new JTextField();
+
+        txtBuscar.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        txtBuscar.setForeground(
+                TEXTO
+        );
+
+        txtBuscar.setToolTipText(
+                "Buscar por ID, título, autor, categoría o disponibilidad"
+        );
+
+        txtBuscar.setBorder(
+                BorderFactory.createCompoundBorder(
+
+                        BorderFactory.createLineBorder(
+                                BORDE
+                        ),
+
+                        new EmptyBorder(
+                                6,
+                                10,
+                                6,
+                                10
+                        )
+                )
+        );
+
+        panel.add(
+                lblBuscar,
+                BorderLayout.WEST
+        );
+
+        panel.add(
+                txtBuscar,
+                BorderLayout.CENTER
+        );
+
+        // =================================================
+        // BÚSQUEDA AUTOMÁTICA
+        // =================================================
+
+        txtBuscar
+                .getDocument()
+                .addDocumentListener(
+                        new DocumentListener() {
+
+                            @Override
+                            public void insertUpdate(
+                                    DocumentEvent e) {
+
+                                filtrarTabla();
+                            }
+
+                            @Override
+                            public void removeUpdate(
+                                    DocumentEvent e) {
+
+                                filtrarTabla();
+                            }
+
+                            @Override
+                            public void changedUpdate(
+                                    DocumentEvent e) {
+
+                                filtrarTabla();
+                            }
+                        }
+                );
+
+        return panel;
+    }
+
+    // =====================================================
+    // PANEL DE TABLA
+    // =====================================================
+
+    private JPanel crearPanelTabla() {
+
+        JPanel panel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        panel.setBackground(
+                Color.WHITE
+        );
+
+        panel.setBorder(
+                BorderFactory.createLineBorder(
+                        BORDE
+                )
+        );
+
+        // =================================================
+        // COLUMNAS
         // =================================================
 
         String[] columnas = {
@@ -219,43 +442,95 @@ public class FrmListaLibros extends JFrame {
             "Disponibilidad"
         };
 
+        // =================================================
+        // MODELO
+        // =================================================
+
         modeloTabla =
                 new DefaultTableModel(
                         columnas,
                         0
                 ) {
 
-            @Override
-            public boolean isCellEditable(
-                    int fila,
-                    int columna) {
+                    @Override
+                    public boolean isCellEditable(
+                            int fila,
+                            int columna) {
 
-                return false;
-            }
-        };
+                        return false;
+                    }
+                };
+
+        // =================================================
+        // TABLA
+        // =================================================
 
         tablaLibros =
                 new JTable(
                         modeloTabla
                 );
 
-        tablaLibros.setRowHeight(
-                28
-        );
-
         tablaLibros.setFont(
                 new Font(
-                        "Arial",
+                        "Segoe UI",
                         Font.PLAIN,
                         13
                 )
         );
 
+        tablaLibros.setForeground(
+                TEXTO
+        );
+
+        tablaLibros.setBackground(
+                Color.WHITE
+        );
+
+        tablaLibros.setRowHeight(
+                34
+        );
+
+        tablaLibros.setGridColor(
+                BORDE
+        );
+
+        tablaLibros.setShowVerticalLines(
+                true
+        );
+
+        tablaLibros.setShowHorizontalLines(
+                true
+        );
+
+        tablaLibros.setSelectionBackground(
+                new Color(
+                        220,
+                        235,
+                        246
+                )
+        );
+
+        tablaLibros.setSelectionForeground(
+                TEXTO
+        );
+
+        tablaLibros.setFillsViewportHeight(
+                true
+        );
+
+        tablaLibros.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
+
+        // =================================================
+        // ENCABEZADO TABLA
+        // =================================================
+
         tablaLibros
                 .getTableHeader()
                 .setFont(
                         new Font(
-                                "Arial",
+                                "Segoe UI",
                                 Font.BOLD,
                                 13
                         )
@@ -273,9 +548,66 @@ public class FrmListaLibros extends JFrame {
                         Color.WHITE
                 );
 
-        tablaLibros.setGridColor(
-                BORDE
+        tablaLibros
+                .getTableHeader()
+                .setPreferredSize(
+                        new Dimension(
+                                0,
+                                36
+                        )
+                );
+
+        tablaLibros
+                .getTableHeader()
+                .setReorderingAllowed(
+                        false
+                );
+
+        // =================================================
+        // ANCHO COLUMNAS
+        // =================================================
+
+        tablaLibros
+                .getColumnModel()
+                .getColumn(0)
+                .setPreferredWidth(50);
+
+        tablaLibros
+                .getColumnModel()
+                .getColumn(1)
+                .setPreferredWidth(210);
+
+        tablaLibros
+                .getColumnModel()
+                .getColumn(2)
+                .setPreferredWidth(180);
+
+        tablaLibros
+                .getColumnModel()
+                .getColumn(3)
+                .setPreferredWidth(150);
+
+        tablaLibros
+                .getColumnModel()
+                .getColumn(4)
+                .setPreferredWidth(140);
+
+        // =================================================
+        // FILTRO
+        // =================================================
+
+        ordenador =
+                new TableRowSorter<>(
+                        modeloTabla
+                );
+
+        tablaLibros.setRowSorter(
+                ordenador
         );
+
+        // =================================================
+        // SCROLL
+        // =================================================
 
         JScrollPane scroll =
                 new JScrollPane(
@@ -283,68 +615,117 @@ public class FrmListaLibros extends JFrame {
                 );
 
         scroll.setBorder(
-                BorderFactory.createLineBorder(
-                        BORDE
+                BorderFactory.createEmptyBorder()
+        );
+
+        scroll.getViewport()
+                .setBackground(
+                        Color.WHITE
+                );
+
+        panel.add(
+                scroll,
+                BorderLayout.CENTER
+        );
+
+        return panel;
+    }
+
+    // =====================================================
+    // PANEL INFERIOR
+    // =====================================================
+
+    private JPanel crearPanelInferior() {
+
+        JPanel panel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        panel.setBackground(
+                FONDO
+        );
+
+        panel.setBorder(
+                new EmptyBorder(
+                        3,
+                        0,
+                        0,
+                        0
                 )
+        );
+
+        // =================================================
+        // TOTAL
+        // =================================================
+
+        lblTotal =
+                new JLabel(
+                        "0 libros registrados"
+                );
+
+        lblTotal.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        12
+                )
+        );
+
+        lblTotal.setForeground(
+                TEXTO_SECUNDARIO
+        );
+
+        panel.add(
+                lblTotal,
+                BorderLayout.WEST
         );
 
         // =================================================
         // BOTONES
         // =================================================
 
-        JPanel panelBotones =
+        JPanel botones =
                 new JPanel(
                         new FlowLayout(
-                                FlowLayout.RIGHT
+                                FlowLayout.RIGHT,
+                                8,
+                                0
                         )
                 );
 
-        panelBotones.setBackground(
+        botones.setBackground(
                 FONDO
         );
 
-        /*
-         * Botón creado por Mario.
-         * Vuelve a cargar la información de la tabla.
-         */
         JButton btnActualizarLista =
                 crearBoton(
                         "Actualizar lista",
-                        AZUL
+                        AZUL_ACTIVO,
+                        145
                 );
-
-        // =================================================
-        // INCREMENTO 3 - CARLOS
-        // NUEVOS BOTONES: ACTUALIZAR Y ELIMINAR LIBRO
-        // =================================================
 
         JButton btnActualizarLibro =
                 crearBoton(
                         "Actualizar libro",
-                        AZUL_OSCURO
+                        AZUL_OSCURO,
+                        145
                 );
 
         JButton btnEliminarLibro =
                 crearBoton(
                         "Eliminar libro",
-                        new Color(198, 40, 40)
+                        ROJO,
+                        140
                 );
 
-        JButton btnCerrar =
-                crearBoton(
-                        "Cerrar",
-                        GRIS
-                );
+        // =================================================
+        // EVENTOS
+        // =================================================
 
-        // Botón de Mario: vuelve a cargar la tabla
         btnActualizarLista.addActionListener(
                 e -> cargarLibros()
         );
-
-        // =================================================
-        // INCREMENTO 3 - CARLOS
-        // EVENTOS DE LOS NUEVOS BOTONES
-        // =================================================
 
         btnActualizarLibro.addActionListener(
                 e -> actualizarLibroSeleccionado()
@@ -354,56 +735,30 @@ public class FrmListaLibros extends JFrame {
                 e -> eliminarLibroSeleccionado()
         );
 
-        btnCerrar.addActionListener(
-                e -> dispose()
-        );
-
-        panelBotones.add(
+        botones.add(
                 btnActualizarLista
         );
 
-        // NUEVO - CARLOS
-        panelBotones.add(
+        botones.add(
                 btnActualizarLibro
         );
 
-        // NUEVO - CARLOS
-        panelBotones.add(
+        botones.add(
                 btnEliminarLibro
         );
 
-        panelBotones.add(
-                btnCerrar
+        panel.add(
+                botones,
+                BorderLayout.EAST
         );
 
-        // =================================================
-        // AGREGAR COMPONENTES
-        // =================================================
-
-        panelPrincipal.add(
-                panelEncabezado,
-                BorderLayout.NORTH
-        );
-
-        panelPrincipal.add(
-                scroll,
-                BorderLayout.CENTER
-        );
-
-        panelPrincipal.add(
-                panelBotones,
-                BorderLayout.SOUTH
-        );
-
-        add(
-                panelPrincipal
-        );
+        return panel;
     }
 
-    /**
-     * Consulta todos los libros registrados
-     * y los muestra en la tabla.
-     */
+    // =====================================================
+    // CARGAR LIBROS
+    // =====================================================
+
     private void cargarLibros() {
 
         modeloTabla.setRowCount(
@@ -414,18 +769,6 @@ public class FrmListaLibros extends JFrame {
 
             List<Libro> libros =
                     controller.listarLibros();
-
-            if (libros.isEmpty()) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "No hay libros registrados.",
-                        "Información",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-
-                return;
-            }
 
             for (Libro libro : libros) {
 
@@ -445,6 +788,10 @@ public class FrmListaLibros extends JFrame {
                 );
             }
 
+            actualizarTotal();
+
+            filtrarTabla();
+
         } catch (RuntimeException e) {
 
             JOptionPane.showMessageDialog(
@@ -457,25 +804,101 @@ public class FrmListaLibros extends JFrame {
     }
 
     // =====================================================
-    // INCREMENTO 3 - CARLOS: ACTUALIZAR LIBRO
+    // FILTRAR TABLA
     // =====================================================
 
-    /**
-     * Permite actualizar el libro seleccionado en la tabla.
-     * El ID se conserva y se pueden modificar el título,
-     * autor, categoría y disponibilidad.
-     */
+    private void filtrarTabla() {
+
+        if (ordenador == null
+                || txtBuscar == null) {
+
+            return;
+        }
+
+        String texto =
+                txtBuscar
+                        .getText()
+                        .trim();
+
+        if (texto.isEmpty()) {
+
+            ordenador.setRowFilter(
+                    null
+            );
+
+        } else {
+
+            ordenador.setRowFilter(
+                    RowFilter.regexFilter(
+                            "(?i)"
+                            + Pattern.quote(texto)
+                    )
+            );
+        }
+
+        actualizarTotal();
+    }
+
+    // =====================================================
+    // ACTUALIZAR TOTAL
+    // =====================================================
+
+    private void actualizarTotal() {
+
+        if (lblTotal == null
+                || tablaLibros == null
+                || modeloTabla == null) {
+
+            return;
+        }
+
+        int visibles =
+                tablaLibros.getRowCount();
+
+        int total =
+                modeloTabla.getRowCount();
+
+        if (txtBuscar != null
+                && !txtBuscar
+                        .getText()
+                        .trim()
+                        .isEmpty()) {
+
+            lblTotal.setText(
+                    visibles
+                    + " de "
+                    + total
+                    + " libros encontrados"
+            );
+
+        } else {
+
+            if (total == 1) {
+
+                lblTotal.setText(
+                        "1 libro registrado"
+                );
+
+            } else {
+
+                lblTotal.setText(
+                        total
+                        + " libros registrados"
+                );
+            }
+        }
+    }
+
+    // =====================================================
+    // ACTUALIZAR LIBRO SELECCIONADO
+    // =====================================================
+
     private void actualizarLibroSeleccionado() {
 
-        // Obtenemos la fila seleccionada
-        int filaSeleccionada =
+        int filaVista =
                 tablaLibros.getSelectedRow();
 
-        /*
-         * -1 significa que el usuario
-         * todavía no ha seleccionado un libro.
-         */
-        if (filaSeleccionada == -1) {
+        if (filaVista == -1) {
 
             JOptionPane.showMessageDialog(
                     this,
@@ -487,7 +910,19 @@ public class FrmListaLibros extends JFrame {
             return;
         }
 
-        // Obtenemos el ID del libro seleccionado
+        // =================================================
+        // CONVERTIR FILA VISIBLE A FILA REAL
+        // =================================================
+
+        int filaSeleccionada =
+                tablaLibros.convertRowIndexToModel(
+                        filaVista
+                );
+
+        // =================================================
+        // ID
+        // =================================================
+
         int id =
                 Integer.parseInt(
                         modeloTabla
@@ -498,7 +933,10 @@ public class FrmListaLibros extends JFrame {
                                 .toString()
                 );
 
-        // Obtenemos los datos actuales
+        // =================================================
+        // DATOS ACTUALES
+        // =================================================
+
         String tituloActual =
                 modeloTabla
                         .getValueAt(
@@ -534,10 +972,10 @@ public class FrmListaLibros extends JFrame {
                                 "Disponible"
                         );
 
-        /*
-         * Creamos los campos del formulario
-         * con los datos actuales del libro.
-         */
+        // =================================================
+        // CAMPOS DEL FORMULARIO
+        // =================================================
+
         JTextField txtTitulo =
                 new JTextField(
                         tituloActual
@@ -555,9 +993,45 @@ public class FrmListaLibros extends JFrame {
 
         JCheckBox chkDisponible =
                 new JCheckBox(
-                        "Disponible",
+                        "Sí, disponible",
                         disponibleActual
                 );
+
+        txtTitulo.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        txtAutor.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        txtCategoria.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        chkDisponible.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        // =================================================
+        // PANEL DEL FORMULARIO
+        // =================================================
 
         JPanel panel =
                 new JPanel(
@@ -569,14 +1043,28 @@ public class FrmListaLibros extends JFrame {
                         )
                 );
 
-        /*
-         * El ID solamente se muestra.
-         * No permitimos modificarlo.
-         */
-        panel.add(
+        panel.setPreferredSize(
+                new Dimension(
+                        350,
+                        245
+                )
+        );
+
+        JLabel lblId =
                 new JLabel(
                         "ID: " + id
+                );
+
+        lblId.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        13
                 )
+        );
+
+        panel.add(
+                lblId
         );
 
         panel.add(
@@ -613,10 +1101,10 @@ public class FrmListaLibros extends JFrame {
                 chkDisponible
         );
 
-        /*
-         * Mostramos el formulario.
-         * El usuario puede aceptar o cancelar.
-         */
+        // =================================================
+        // MOSTRAR DIÁLOGO
+        // =================================================
+
         int opcion =
                 JOptionPane.showConfirmDialog(
                         this,
@@ -626,22 +1114,35 @@ public class FrmListaLibros extends JFrame {
                         JOptionPane.PLAIN_MESSAGE
                 );
 
-        // Si cancela, no hacemos ningún cambio
-        if (opcion != JOptionPane.OK_OPTION) {
+        if (opcion
+                != JOptionPane.OK_OPTION) {
+
             return;
         }
 
-        // Obtenemos la nueva información
+        // =================================================
+        // NUEVOS DATOS
+        // =================================================
+
         String nuevoTitulo =
-                txtTitulo.getText().trim();
+                txtTitulo
+                        .getText()
+                        .trim();
 
         String nuevoAutor =
-                txtAutor.getText().trim();
+                txtAutor
+                        .getText()
+                        .trim();
 
         String nuevaCategoria =
-                txtCategoria.getText().trim();
+                txtCategoria
+                        .getText()
+                        .trim();
 
-        // Validamos campos vacíos
+        // =================================================
+        // VALIDACIÓN
+        // =================================================
+
         if (nuevoTitulo.isEmpty()
                 || nuevoAutor.isEmpty()
                 || nuevaCategoria.isEmpty()) {
@@ -656,12 +1157,12 @@ public class FrmListaLibros extends JFrame {
             return;
         }
 
+        // =================================================
+        // ACTUALIZAR
+        // =================================================
+
         try {
 
-            /*
-             * Enviamos los nuevos datos
-             * al controlador.
-             */
             controller.actualizarLibro(
                     id,
                     nuevoTitulo,
@@ -677,10 +1178,6 @@ public class FrmListaLibros extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE
             );
 
-            /*
-             * Recargamos la tabla para que
-             * aparezcan inmediatamente los cambios.
-             */
             cargarLibros();
 
         } catch (RuntimeException e) {
@@ -695,20 +1192,15 @@ public class FrmListaLibros extends JFrame {
     }
 
     // =====================================================
-    // INCREMENTO 3 - CARLOS: ELIMINAR LIBRO
+    // ELIMINAR LIBRO
     // =====================================================
 
-    /**
-     * Elimina el libro seleccionado.
-     * Antes de eliminar solicita confirmación.
-     */
     private void eliminarLibroSeleccionado() {
 
-        int filaSeleccionada =
+        int filaVista =
                 tablaLibros.getSelectedRow();
 
-        // Validamos que el usuario seleccione un libro
-        if (filaSeleccionada == -1) {
+        if (filaVista == -1) {
 
             JOptionPane.showMessageDialog(
                     this,
@@ -720,7 +1212,19 @@ public class FrmListaLibros extends JFrame {
             return;
         }
 
-        // Obtenemos el ID
+        // =================================================
+        // CONVERTIR FILA
+        // =================================================
+
+        int filaSeleccionada =
+                tablaLibros.convertRowIndexToModel(
+                        filaVista
+                );
+
+        // =================================================
+        // OBTENER ID
+        // =================================================
+
         int id =
                 Integer.parseInt(
                         modeloTabla
@@ -731,7 +1235,10 @@ public class FrmListaLibros extends JFrame {
                                 .toString()
                 );
 
-        // Obtenemos el título para mostrarlo en la confirmación
+        // =================================================
+        // OBTENER TÍTULO
+        // =================================================
+
         String titulo =
                 modeloTabla
                         .getValueAt(
@@ -740,51 +1247,42 @@ public class FrmListaLibros extends JFrame {
                         )
                         .toString();
 
-        /*
-         * Solicitamos confirmación para evitar
-         * eliminar un libro accidentalmente.
-         */
-        // =====================================================
-// INCREMENTO 3 - CARLOS
-// CONFIRMACIÓN DE ELIMINACIÓN EN ESPAÑOL
-// =====================================================
+        // =================================================
+        // CONFIRMACIÓN
+        // =================================================
 
-// Opciones que aparecerán en la ventana
-Object[] opciones = {
-    "Sí",
-    "No"
-};
+        Object[] opciones = {
+            "Sí",
+            "No"
+        };
 
-            /*
-             * Mostramos una ventana de confirmación
-             * con las opciones Sí y No en español.
-             */
-            int confirmacion =
-                    JOptionPane.showOptionDialog(
-                            this,
-                            "¿Está seguro de eliminar el libro '"
-                                    + titulo
-                                    + "' con ID "
-                                    + id
-                                    + "?",
-                            "Confirmar eliminación",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.WARNING_MESSAGE,
-                            null,
-                            opciones,
-                            opciones[1]
-                    );
+        int confirmacion =
+                JOptionPane.showOptionDialog(
+                        this,
+                        "¿Está seguro de eliminar el libro '"
+                        + titulo
+                        + "' con ID "
+                        + id
+                        + "?",
+                        "Confirmar eliminación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE,
+                        null,
+                        opciones,
+                        opciones[1]
+                );
 
-            // La opción 0 corresponde a "Sí".
-            // Si selecciona "No" o cierra la ventana,
-            // se cancela la eliminación.
-            if (confirmacion != 0) {
-                return;
-            }
+        if (confirmacion != 0) {
+
+            return;
+        }
+
+        // =================================================
+        // ELIMINAR
+        // =================================================
 
         try {
 
-            // Solicitamos al controlador eliminar el libro
             controller.eliminarLibro(
                     id
             );
@@ -796,10 +1294,6 @@ Object[] opciones = {
                     JOptionPane.INFORMATION_MESSAGE
             );
 
-            /*
-             * Recargamos la tabla para retirar
-             * inmediatamente el libro eliminado.
-             */
             cargarLibros();
 
         } catch (RuntimeException e) {
@@ -813,13 +1307,14 @@ Object[] opciones = {
         }
     }
 
-    /**
-     * Método auxiliar para crear botones
-     * manteniendo el mismo estilo.
-     */
+    // =====================================================
+    // CREAR BOTÓN
+    // =====================================================
+
     private JButton crearBoton(
             String texto,
-            Color color) {
+            Color color,
+            int ancho) {
 
         JButton boton =
                 new JButton(
@@ -836,9 +1331,9 @@ Object[] opciones = {
 
         boton.setFont(
                 new Font(
-                        "Arial",
+                        "Segoe UI",
                         Font.BOLD,
-                        13
+                        12
                 )
         );
 
@@ -846,11 +1341,28 @@ Object[] opciones = {
                 false
         );
 
-        boton.setPreferredSize(
-                new Dimension(
-                        140,
-                        35
+        boton.setBorderPainted(
+                false
+        );
+
+        boton.setCursor(
+                new Cursor(
+                        Cursor.HAND_CURSOR
                 )
+        );
+
+        Dimension tamano =
+                new Dimension(
+                        ancho,
+                        40
+                );
+
+        boton.setPreferredSize(
+                tamano
+        );
+
+        boton.setMinimumSize(
+                tamano
         );
 
         return boton;

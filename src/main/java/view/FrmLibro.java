@@ -1,7 +1,6 @@
 package view;
 
 import controller.LibroController;
-import model.Libro;
 import model.LibroRepository;
 import model.LibroRepositoryArchivo;
 
@@ -15,20 +14,17 @@ public class FrmLibro extends JFrame {
     // COLORES
     // =====================================================
 
-    private final Color AZUL = new Color(25, 78, 95);
-    private final Color AZUL_OSCURO = new Color(24, 48, 67);
+    private final Color AZUL_OSCURO = new Color(20, 55, 84);
+    private final Color AZUL_ACTIVO = new Color(38, 105, 150);
+    private final Color VERDE = new Color(38, 145, 105);
 
-    private final Color VERDE = new Color(38, 132, 105);
-    private final Color AZUL_BOTON = new Color(52, 103, 140);
-    private final Color GRIS = new Color(100, 112, 123);
-
-    private final Color FONDO = new Color(246, 248, 250);
+    private final Color FONDO = new Color(245, 247, 250);
     private final Color TEXTO = new Color(35, 45, 55);
+    private final Color TEXTO_SECUNDARIO = new Color(100, 112, 123);
     private final Color BORDE = new Color(215, 222, 228);
-    private final Color RESULTADO = new Color(237, 244, 246);
 
     // =====================================================
-    // REGISTRO
+    // CAMPOS DEL FORMULARIO
     // =====================================================
 
     private JTextField txtId;
@@ -40,38 +36,19 @@ public class FrmLibro extends JFrame {
 
     private JButton btnRegistrar;
     private JButton btnLimpiar;
-    private JButton btnMostrarBusqueda;
 
     // =====================================================
-    // INCREMENTO 3 - MARIO: VER TODOS LOS LIBROS
+    // BOTONES DEL MENÚ
     // =====================================================
-    // Este botón abre una nueva ventana con una tabla
-    // que muestra todos los libros registrados.
+
+    private JButton btnMenuRegistrar;
     private JButton btnVerTodos;
 
     // =====================================================
-    // BÚSQUEDA
+    // ZONA DONDE CAMBIARÁ EL CONTENIDO
     // =====================================================
 
-    private JPanel panelBusqueda;
-    private JPanel panelResultado;
-
-    private JTextField txtBuscarId;
-    private JButton btnBuscar;
-
-    private JLabel lblResultadoId;
-    private JLabel lblResultadoTitulo;
-    private JLabel lblResultadoAutor;
-    private JLabel lblResultadoCategoria;
-    private JLabel lblResultadoDisponible;
-
-    private JLabel lblEstadoBusqueda;
-
-    // =====================================================
-    // SCROLL
-    // =====================================================
-
-    private JScrollPane scrollPrincipal;
+    private JPanel panelContenido;
 
     // =====================================================
     // CONTROLADOR
@@ -91,9 +68,7 @@ public class FrmLibro extends JFrame {
         controller =
                 new LibroController(repository);
 
-        setTitle(
-                "Sistema de Gestión de Biblioteca"
-        );
+        setTitle("Sistema de Gestión de Biblioteca");
 
         setDefaultCloseOperation(
                 JFrame.EXIT_ON_CLOSE
@@ -119,141 +94,62 @@ public class FrmLibro extends JFrame {
                         new BorderLayout()
                 );
 
-        principal.setBackground(
-                FONDO
-        );
+        principal.setBackground(FONDO);
 
-        // =========================
-        // ENCABEZADO
-        // =========================
-
+        // Menú izquierdo
         principal.add(
-                crearEncabezado(),
-                BorderLayout.NORTH
+                crearMenuLateral(),
+                BorderLayout.WEST
         );
 
-        // =========================
-        // CONTENIDO
-        // =========================
-
-        JPanel contenido =
-                new JPanel();
-
-        contenido.setLayout(
-                new BoxLayout(
-                        contenido,
-                        BoxLayout.Y_AXIS
-                )
-        );
-
-        contenido.setBackground(
-                FONDO
-        );
-
-        contenido.setBorder(
-                new EmptyBorder(
-                        22,
-                        35,
-                        25,
-                        35
-                )
-        );
-
-        // Registrar
-        contenido.add(
-                crearPanelRegistro()
-        );
-
-        contenido.add(
-                Box.createVerticalStrut(14)
-        );
-
-        // Buscar
-        panelBusqueda =
-                crearPanelBusqueda();
-
-        panelBusqueda.setVisible(
-                false
-        );
-
-        contenido.add(
-                panelBusqueda
-        );
-
-        // =========================
-        // SCROLL VERTICAL
-        // =========================
-
-        scrollPrincipal =
-                new JScrollPane(
-                        contenido
-                );
-
-        scrollPrincipal.setBorder(
-                null
-        );
-
-        scrollPrincipal.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-        );
-
-        scrollPrincipal.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
-        );
-
-        scrollPrincipal.getVerticalScrollBar()
-                .setUnitIncrement(16);
-
-        scrollPrincipal.getViewport()
-                .setBackground(FONDO);
-
-        scrollPrincipal.setPreferredSize(
-                new Dimension(
-                        700,
-                        500
-                )
-        );
-
+        // Zona derecha
         principal.add(
-                scrollPrincipal,
+                crearZonaPrincipal(),
                 BorderLayout.CENTER
         );
 
-        add(principal);
+        setContentPane(principal);
     }
 
     // =====================================================
-    // ENCABEZADO CON LOGO
+    // MENÚ LATERAL
     // =====================================================
 
-    private JPanel crearEncabezado() {
+    private JPanel crearMenuLateral() {
 
-        JPanel encabezado =
+        JPanel menu =
                 new JPanel();
 
-        encabezado.setLayout(
+        menu.setLayout(
                 new BoxLayout(
-                        encabezado,
+                        menu,
                         BoxLayout.Y_AXIS
                 )
         );
 
-        encabezado.setBackground(
-                AZUL
+        menu.setBackground(
+                AZUL_OSCURO
         );
 
-        encabezado.setBorder(
-                new EmptyBorder(
-                        18,
-                        30,
-                        18,
-                        30
+        menu.setPreferredSize(
+                new Dimension(
+                        260,
+                        650
                 )
         );
 
-        // =========================
+        menu.setBorder(
+                new EmptyBorder(
+                        35,
+                        25,
+                        25,
+                        25
+                )
+        );
+
+        // =================================================
         // LOGO
-        // =========================
+        // =================================================
 
         JLabel lblLogo =
                 new JLabel();
@@ -274,8 +170,8 @@ public class FrmLibro extends JFrame {
                     iconoOriginal
                             .getImage()
                             .getScaledInstance(
-                                    70,
-                                    70,
+                                    75,
+                                    75,
                                     Image.SCALE_SMOOTH
                             );
 
@@ -284,33 +180,284 @@ public class FrmLibro extends JFrame {
                             imagenEscalada
                     )
             );
-
-        } else {
-
-            System.out.println(
-                    "No se encontró el logo en "
-                            + "/imagenes/logo_biblioteca.png"
-            );
         }
 
         lblLogo.setAlignmentX(
                 Component.CENTER_ALIGNMENT
         );
 
-        // =========================
-        // TÍTULO
-        // =========================
+        // =================================================
+        // NOMBRE BIBLIOTECA
+        // =================================================
+
+        JLabel lblBiblioteca =
+                new JLabel(
+                        "BIBLIOTECA"
+                );
+
+        lblBiblioteca.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        20
+                )
+        );
+
+        lblBiblioteca.setForeground(
+                Color.WHITE
+        );
+
+        lblBiblioteca.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        // =================================================
+        // SUBTÍTULO
+        // =================================================
+
+        JLabel lblSistema =
+                new JLabel(
+                        "Sistema de Gestión"
+                );
+
+        lblSistema.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        12
+                )
+        );
+
+        lblSistema.setForeground(
+                new Color(
+                        195,
+                        213,
+                        225
+                )
+        );
+
+        lblSistema.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        // =================================================
+        // AGREGAR LOGO Y NOMBRE
+        // =================================================
+
+        menu.add(lblLogo);
+
+        menu.add(
+                Box.createVerticalStrut(12)
+        );
+
+        menu.add(lblBiblioteca);
+
+        menu.add(
+                Box.createVerticalStrut(5)
+        );
+
+        menu.add(lblSistema);
+
+        menu.add(
+                Box.createVerticalStrut(45)
+        );
+
+        // =================================================
+        // BOTÓN REGISTRAR LIBRO
+        // =================================================
+
+        btnMenuRegistrar =
+                crearBotonMenu(
+                        "Registrar Libro",
+                        true
+                );
+
+        btnMenuRegistrar.addActionListener(
+                e -> mostrarRegistro()
+        );
+
+        menu.add(
+                btnMenuRegistrar
+        );
+
+        menu.add(
+                Box.createVerticalStrut(12)
+        );
+
+        // =================================================
+        // BOTÓN VER TODOS LOS LIBROS
+        // =================================================
+
+        btnVerTodos =
+                crearBotonMenu(
+                        "Ver todos los libros",
+                        false
+                );
+
+        btnVerTodos.addActionListener(
+                e -> mostrarListaLibros()
+        );
+
+        menu.add(
+                btnVerTodos
+        );
+
+        // Espacio flexible
+        menu.add(
+                Box.createVerticalGlue()
+        );
+
+        // =================================================
+        // VERSIÓN
+        // =================================================
+
+        JLabel lblVersion =
+                new JLabel(
+                        "Versión 1.0"
+                );
+
+        lblVersion.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        11
+                )
+        );
+
+        lblVersion.setForeground(
+                new Color(
+                        170,
+                        195,
+                        210
+                )
+        );
+
+        lblVersion.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        menu.add(
+                lblVersion
+        );
+
+        return menu;
+    }
+
+    // =====================================================
+    // ZONA PRINCIPAL
+    // =====================================================
+
+    private JPanel crearZonaPrincipal() {
+
+        JPanel zona =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        zona.setBackground(
+                FONDO
+        );
+
+        zona.setPreferredSize(
+                new Dimension(
+                        840,
+                        650
+                )
+        );
+
+        // =================================================
+        // ENCABEZADO
+        // =================================================
+
+        zona.add(
+                crearEncabezado(),
+                BorderLayout.NORTH
+        );
+
+        // =================================================
+        // PANEL DINÁMICO
+        // Aquí aparecerá Registrar o Ver todos
+        // =================================================
+
+        panelContenido =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        panelContenido.setBackground(
+                FONDO
+        );
+
+        // Al iniciar mostramos Registrar Libro
+        mostrarRegistro();
+
+        zona.add(
+                panelContenido,
+                BorderLayout.CENTER
+        );
+
+        return zona;
+    }
+
+    // =====================================================
+    // ENCABEZADO
+    // =====================================================
+
+    private JPanel crearEncabezado() {
+
+        JPanel encabezado =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        encabezado.setBackground(
+                AZUL_OSCURO
+        );
+
+        encabezado.setPreferredSize(
+                new Dimension(
+                        840,
+                        110
+                )
+        );
+
+        encabezado.setBorder(
+                new EmptyBorder(
+                        20,
+                        35,
+                        20,
+                        35
+                )
+        );
+
+        // =================================================
+        // TÍTULO Y SUBTÍTULO
+        // =================================================
+
+        JPanel textos =
+                new JPanel();
+
+        textos.setLayout(
+                new BoxLayout(
+                        textos,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        textos.setBackground(
+                AZUL_OSCURO
+        );
 
         JLabel titulo =
                 new JLabel(
-                        "SISTEMA DE GESTIÓN DE BIBLIOTECA"
+                        "Sistema de Gestión de Biblioteca"
                 );
 
         titulo.setFont(
                 new Font(
                         "Segoe UI",
                         Font.BOLD,
-                        23
+                        26
                 )
         );
 
@@ -319,134 +466,241 @@ public class FrmLibro extends JFrame {
         );
 
         titulo.setAlignmentX(
-                Component.CENTER_ALIGNMENT
+                Component.LEFT_ALIGNMENT
         );
-
-        // =========================
-        // SUBTÍTULO
-        // =========================
 
         JLabel subtitulo =
                 new JLabel(
-                        "Registro y consulta de libros"
+                        "Registro y administración de libros"
                 );
 
         subtitulo.setFont(
                 new Font(
                         "Segoe UI",
                         Font.PLAIN,
-                        14
+                        13
                 )
         );
 
         subtitulo.setForeground(
                 new Color(
-                        220,
-                        232,
-                        235
+                        195,
+                        213,
+                        225
                 )
         );
 
         subtitulo.setAlignmentX(
-                Component.CENTER_ALIGNMENT
+                Component.LEFT_ALIGNMENT
         );
 
-        encabezado.add(
-                lblLogo
-        );
-
-        encabezado.add(
-                Box.createVerticalStrut(8)
-        );
-
-        encabezado.add(
+        textos.add(
                 titulo
         );
 
-        encabezado.add(
-                Box.createVerticalStrut(5)
+        textos.add(
+                Box.createVerticalStrut(6)
+        );
+
+        textos.add(
+                subtitulo
         );
 
         encabezado.add(
-                subtitulo
+                textos,
+                BorderLayout.WEST
+        );
+
+        // =================================================
+        // MENSAJE DERECHO
+        // =================================================
+
+        JLabel mensaje =
+                new JLabel(
+                        "Organizando conocimiento"
+                );
+
+        mensaje.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.ITALIC,
+                        12
+                )
+        );
+
+        mensaje.setForeground(
+                new Color(
+                        195,
+                        213,
+                        225
+                )
+        );
+
+        encabezado.add(
+                mensaje,
+                BorderLayout.EAST
         );
 
         return encabezado;
     }
 
     // =====================================================
-    // PANEL REGISTRAR LIBRO
+    // MOSTRAR REGISTRO
+    // =====================================================
+
+    private void mostrarRegistro() {
+
+        if (panelContenido == null) {
+            return;
+        }
+
+        // Quitamos lo que estuviera mostrado
+        panelContenido.removeAll();
+
+        // =================================================
+        // CONTENEDOR PARA CENTRAR EL FORMULARIO
+        // =================================================
+
+        JPanel centro =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
+        centro.setBackground(
+                FONDO
+        );
+
+        centro.setBorder(
+                new EmptyBorder(
+                        25,
+                        45,
+                        25,
+                        45
+                )
+        );
+
+        centro.add(
+                crearPanelRegistro()
+        );
+
+        panelContenido.add(
+                centro,
+                BorderLayout.CENTER
+        );
+
+        // =================================================
+        // CAMBIAR COLOR DEL MENÚ
+        // =================================================
+
+        cambiarBotonActivo(
+                btnMenuRegistrar,
+                btnVerTodos
+        );
+
+        // =================================================
+        // ACTUALIZAR PANTALLA
+        // =================================================
+
+        panelContenido.revalidate();
+        panelContenido.repaint();
+
+        SwingUtilities.invokeLater(
+                () -> txtId.requestFocus()
+        );
+    }
+
+    // =====================================================
+    // MOSTRAR LISTA DE LIBROS
+    // =====================================================
+
+    private void mostrarListaLibros() {
+
+        if (panelContenido == null) {
+            return;
+        }
+
+        // Quitamos el formulario de registro
+        panelContenido.removeAll();
+
+        /*
+         * FrmListaLibros se conservará como una clase
+         * independiente, pero ahora será un JPanel.
+         *
+         * De esta forma NO se abre una segunda ventana.
+         */
+        FrmListaLibros listaLibros =
+                new FrmListaLibros(
+                        controller
+                );
+
+        panelContenido.add(
+                listaLibros,
+                BorderLayout.CENTER
+        );
+
+        // =================================================
+        // CAMBIAR COLOR DEL MENÚ
+        // =================================================
+
+        cambiarBotonActivo(
+                btnVerTodos,
+                btnMenuRegistrar
+        );
+
+        // =================================================
+        // ACTUALIZAR PANTALLA
+        // =================================================
+
+        panelContenido.revalidate();
+        panelContenido.repaint();
+    }
+
+    // =====================================================
+    // CAMBIAR BOTÓN ACTIVO DEL MENÚ
+    // =====================================================
+
+    private void cambiarBotonActivo(
+            JButton activo,
+            JButton inactivo) {
+
+        if (activo != null) {
+
+            activo.setBackground(
+                    AZUL_ACTIVO
+            );
+        }
+
+        if (inactivo != null) {
+
+            inactivo.setBackground(
+                    AZUL_OSCURO
+            );
+        }
+    }
+
+    // =====================================================
+    // PANEL REGISTRO
     // =====================================================
 
     private JPanel crearPanelRegistro() {
 
         JPanel panel =
-                new JPanel();
-
-        panel.setLayout(
-                new BoxLayout(
-                        panel,
-                        BoxLayout.Y_AXIS
-                )
-        );
+                new JPanel(
+                        new BorderLayout()
+                );
 
         panel.setBackground(
-                FONDO
-        );
-
-        panel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        // =========================
-        // TÍTULO
-        // =========================
-
-        JLabel titulo =
-                crearTituloSeccion(
-                        "REGISTRAR LIBRO"
-                );
-
-        JLabel descripcion =
-                crearDescripcion(
-                        "Complete la información para registrar un nuevo libro"
-                );
-
-        panel.add(
-                titulo
-        );
-
-        panel.add(
-                Box.createVerticalStrut(4)
-        );
-
-        panel.add(
-                descripcion
-        );
-
-        panel.add(
-                Box.createVerticalStrut(15)
-        );
-
-        // =========================
-        // FORMULARIO
-        // =========================
-
-        JPanel formulario =
-                new JPanel(
-                        new GridLayout(
-                                5,
-                                2,
-                                14,
-                                12
-                        )
-                );
-
-        formulario.setBackground(
                 Color.WHITE
         );
 
-        formulario.setBorder(
+        panel.setPreferredSize(
+                new Dimension(
+                        650,
+                        430
+                )
+        );
+
+        panel.setBorder(
                 BorderFactory.createCompoundBorder(
 
                         BorderFactory.createLineBorder(
@@ -454,24 +708,128 @@ public class FrmLibro extends JFrame {
                         ),
 
                         new EmptyBorder(
-                                20,
                                 28,
-                                20,
-                                28
+                                40,
+                                28,
+                                40
                         )
                 )
         );
 
-        formulario.setMaximumSize(
-                new Dimension(
-                        520,
-                        250
+        // =================================================
+        // PARTE SUPERIOR
+        // =================================================
+
+        JPanel superior =
+                new JPanel();
+
+        superior.setLayout(
+                new BoxLayout(
+                        superior,
+                        BoxLayout.Y_AXIS
                 )
         );
 
-        // =========================
+        superior.setBackground(
+                Color.WHITE
+        );
+
+        JLabel titulo =
+                new JLabel(
+                        "REGISTRAR LIBRO"
+                );
+
+        titulo.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        21
+                )
+        );
+
+        titulo.setForeground(
+                AZUL_OSCURO
+        );
+
+        titulo.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        JLabel descripcion =
+                new JLabel(
+                        "Complete la información para registrar un nuevo libro."
+                );
+
+        descripcion.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
+        descripcion.setForeground(
+                TEXTO_SECUNDARIO
+        );
+
+        descripcion.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        superior.add(
+                titulo
+        );
+
+        superior.add(
+                Box.createVerticalStrut(5)
+        );
+
+        superior.add(
+                descripcion
+        );
+
+        superior.add(
+                Box.createVerticalStrut(20)
+        );
+
+        panel.add(
+                superior,
+                BorderLayout.NORTH
+        );
+
+        // =================================================
+        // FORMULARIO CENTRAL
+        // =================================================
+
+        JPanel formulario =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
+        formulario.setBackground(
+                Color.WHITE
+        );
+
+        GridBagConstraints gbc =
+                new GridBagConstraints();
+
+        gbc.insets =
+                new Insets(
+                        6,
+                        5,
+                        6,
+                        5
+                );
+
+        gbc.fill =
+                GridBagConstraints.HORIZONTAL;
+
+        gbc.anchor =
+                GridBagConstraints.WEST;
+
+        // =================================================
         // CAMPOS
-        // =========================
+        // =================================================
 
         txtId =
                 crearCampo();
@@ -506,134 +864,120 @@ public class FrmLibro extends JFrame {
                 Color.WHITE
         );
 
-        // =========================
-        // AGREGAR CAMPOS
-        // =========================
-
-        formulario.add(
-                crearEtiqueta("ID:")
+        chkDisponible.setFocusPainted(
+                false
         );
 
-        formulario.add(
+        // =================================================
+        // FILAS
+        // =================================================
+
+        agregarFila(
+                formulario,
+                gbc,
+                0,
+                "ID:",
                 txtId
         );
 
-        formulario.add(
-                crearEtiqueta("Título:")
-        );
-
-        formulario.add(
+        agregarFila(
+                formulario,
+                gbc,
+                1,
+                "Título:",
                 txtTitulo
         );
 
-        formulario.add(
-                crearEtiqueta("Autor:")
-        );
-
-        formulario.add(
+        agregarFila(
+                formulario,
+                gbc,
+                2,
+                "Autor:",
                 txtAutor
         );
 
-        formulario.add(
-                crearEtiqueta("Categoría:")
-        );
-
-        formulario.add(
+        agregarFila(
+                formulario,
+                gbc,
+                3,
+                "Categoría:",
                 txtCategoria
         );
+
+        // =================================================
+        // DISPONIBILIDAD
+        // =================================================
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.weightx = 0;
 
         formulario.add(
                 crearEtiqueta(
                         "Disponibilidad:"
-                )
+                ),
+                gbc
         );
+
+        gbc.gridx = 1;
+        gbc.weightx = 1;
 
         formulario.add(
-                chkDisponible
+                chkDisponible,
+                gbc
         );
 
         panel.add(
-                formulario
+                formulario,
+                BorderLayout.CENTER
         );
 
-        panel.add(
-                Box.createVerticalStrut(18)
-        );
+        // =================================================
+        // BOTONES INFERIORES
+        // =================================================
 
-        // =========================
-        // BOTONES
-        // =========================
-
-        JPanel botones =
+        JPanel zonaBotones =
                 new JPanel(
                         new FlowLayout(
-                                FlowLayout.CENTER,
+                                FlowLayout.LEFT,
                                 12,
-                                0
+                                10
                         )
                 );
 
-        botones.setBackground(
-                FONDO
+        zonaBotones.setBackground(
+                Color.WHITE
+        );
+
+        zonaBotones.setPreferredSize(
+                new Dimension(
+                        570,
+                        65
+                )
         );
 
         btnRegistrar =
-                crearBoton(
-                        "Registrar Libro",
-                        VERDE,
-                        160
-                );
+                crearBotonRegistrar();
 
         btnLimpiar =
-                crearBoton(
-                        "Limpiar",
-                        GRIS,
-                        110
-                );
+                crearBotonLimpiar();
 
-        btnMostrarBusqueda =
-                crearBoton(
-                        "Buscar Libro",
-                        AZUL_BOTON,
-                        150
-                );
-
-        // =================================================
-        // INCREMENTO 3 - MARIO: BOTÓN VER TODOS LOS LIBROS
-        // =================================================
-        // Se crea el botón que permitirá abrir la ventana
-        // donde se mostrarán todos los libros en una tabla.
-        btnVerTodos =
-                crearBoton(
-                        "Ver todos los libros",
-                        AZUL_BOTON,
-                        175
-                );
-
-        botones.add(
+        zonaBotones.add(
                 btnRegistrar
         );
 
-        botones.add(
+        zonaBotones.add(
                 btnLimpiar
         );
 
-        botones.add(
-                btnMostrarBusqueda
-        );
-
-        // Agregamos el nuevo botón de Mario al panel.
-        botones.add(
-                btnVerTodos
-        );
-
         panel.add(
-                botones
+                zonaBotones,
+                BorderLayout.SOUTH
         );
 
-        // =========================
+        // =================================================
         // ACCIONES
-        // =========================
+        // =================================================
 
         btnRegistrar.addActionListener(
                 e -> registrarLibro()
@@ -643,719 +987,42 @@ public class FrmLibro extends JFrame {
                 e -> limpiarCampos()
         );
 
-        btnMostrarBusqueda.addActionListener(
-                e -> mostrarOcultarBusqueda()
-        );
-
-        // Al hacer clic se abre la ventana que contiene
-        // el listado completo de libros registrados.
-        btnVerTodos.addActionListener(
-                e -> abrirListaLibros()
-        );
-
         return panel;
     }
 
     // =====================================================
-    // PANEL BUSCAR LIBRO
+    // AGREGAR FILA
     // =====================================================
 
-    private JPanel crearPanelBusqueda() {
+    private void agregarFila(
+            JPanel panel,
+            GridBagConstraints gbc,
+            int fila,
+            String texto,
+            JComponent componente) {
 
-        JPanel panel =
-                new JPanel();
-
-        panel.setLayout(
-                new BoxLayout(
-                        panel,
-                        BoxLayout.Y_AXIS
-                )
-        );
-
-        panel.setBackground(
-                Color.WHITE
-        );
-
-        panel.setBorder(
-                BorderFactory.createCompoundBorder(
-
-                        BorderFactory.createLineBorder(
-                                BORDE
-                        ),
-
-                        new EmptyBorder(
-                                18,
-                                25,
-                                18,
-                                25
-                        )
-                )
-        );
-
-        panel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        panel.setMaximumSize(
-                new Dimension(
-                        520,
-                        350
-                )
-        );
-
-        // =========================
-        // TÍTULO
-        // =========================
-
-        JLabel titulo =
-                crearTituloSeccion(
-                        "BUSCAR LIBRO"
-                );
-
-        JLabel descripcion =
-                crearDescripcion(
-                        "Ingrese el ID del libro que desea consultar"
-                );
+        gbc.gridx = 0;
+        gbc.gridy = fila;
+        gbc.weightx = 0;
 
         panel.add(
-                titulo
-        );
-
-        panel.add(
-                Box.createVerticalStrut(4)
-        );
-
-        panel.add(
-                descripcion
-        );
-
-        panel.add(
-                Box.createVerticalStrut(14)
-        );
-
-        // =========================
-        // FILA DE BÚSQUEDA
-        // =========================
-
-        JPanel filaBusqueda =
-                new JPanel(
-                        new BorderLayout(
-                                10,
-                                0
-                        )
-                );
-
-        filaBusqueda.setBackground(
-                Color.WHITE
-        );
-
-        JLabel lblBuscar =
                 crearEtiqueta(
-                        "ID del libro:"
-                );
-
-        txtBuscarId =
-                crearCampo();
-
-        btnBuscar =
-                crearBoton(
-                        "Buscar",
-                        AZUL_BOTON,
-                        100
-                );
-
-        filaBusqueda.add(
-                lblBuscar,
-                BorderLayout.WEST
+                        texto
+                ),
+                gbc
         );
 
-        filaBusqueda.add(
-                txtBuscarId,
-                BorderLayout.CENTER
-        );
-
-        filaBusqueda.add(
-                btnBuscar,
-                BorderLayout.EAST
-        );
-
-        filaBusqueda.setMaximumSize(
-                new Dimension(
-                        460,
-                        35
-                )
-        );
-
-        filaBusqueda.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
+        gbc.gridx = 1;
+        gbc.weightx = 1;
 
         panel.add(
-                filaBusqueda
+                componente,
+                gbc
         );
-
-        panel.add(
-                Box.createVerticalStrut(14)
-        );
-
-        // =========================
-        // PANEL RESULTADO
-        // =========================
-
-        panelResultado =
-                new JPanel();
-
-        panelResultado.setLayout(
-                new BoxLayout(
-                        panelResultado,
-                        BoxLayout.Y_AXIS
-                )
-        );
-
-        panelResultado.setBackground(
-                RESULTADO
-        );
-
-        panelResultado.setBorder(
-                BorderFactory.createCompoundBorder(
-
-                        BorderFactory.createTitledBorder(
-
-                                BorderFactory.createLineBorder(
-                                        new Color(
-                                                190,
-                                                205,
-                                                210
-                                        )
-                                ),
-
-                                "Resultado de la búsqueda"
-                        ),
-
-                        new EmptyBorder(
-                                10,
-                                15,
-                                10,
-                                15
-                        )
-                )
-        );
-
-        panelResultado.setMaximumSize(
-                new Dimension(
-                        460,
-                        150
-                )
-        );
-
-        panelResultado.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        // =========================
-        // RESULTADOS
-        // =========================
-
-        lblResultadoId =
-                crearResultado(
-                        "ID: -"
-                );
-
-        lblResultadoTitulo =
-                crearResultado(
-                        "Título: -"
-                );
-
-        lblResultadoAutor =
-                crearResultado(
-                        "Autor: -"
-                );
-
-        lblResultadoCategoria =
-                crearResultado(
-                        "Categoría: -"
-                );
-
-        lblResultadoDisponible =
-                crearResultado(
-                        "Disponibilidad: -"
-                );
-
-        panelResultado.add(
-                lblResultadoId
-        );
-
-        panelResultado.add(
-                Box.createVerticalStrut(3)
-        );
-
-        panelResultado.add(
-                lblResultadoTitulo
-        );
-
-        panelResultado.add(
-                Box.createVerticalStrut(3)
-        );
-
-        panelResultado.add(
-                lblResultadoAutor
-        );
-
-        panelResultado.add(
-                Box.createVerticalStrut(3)
-        );
-
-        panelResultado.add(
-                lblResultadoCategoria
-        );
-
-        panelResultado.add(
-                Box.createVerticalStrut(3)
-        );
-
-        panelResultado.add(
-                lblResultadoDisponible
-        );
-
-        panelResultado.setVisible(
-                false
-        );
-
-        panel.add(
-                panelResultado
-        );
-
-        panel.add(
-                Box.createVerticalStrut(10)
-        );
-
-        // =========================
-        // ESTADO
-        // =========================
-
-        lblEstadoBusqueda =
-                new JLabel(
-                        "Ingrese un ID para realizar la búsqueda."
-                );
-
-        lblEstadoBusqueda.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.PLAIN,
-                        12
-                )
-        );
-
-        lblEstadoBusqueda.setForeground(
-                GRIS
-        );
-
-        lblEstadoBusqueda.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        panel.add(
-                lblEstadoBusqueda
-        );
-
-        // =========================
-        // ACCIONES
-        // =========================
-
-        btnBuscar.addActionListener(
-                e -> buscarLibro()
-        );
-
-        txtBuscarId.addActionListener(
-                e -> buscarLibro()
-        );
-
-        return panel;
     }
 
     // =====================================================
-    // INCREMENTO 3 - MARIO: ABRIR LISTA DE LIBROS
-    // =====================================================
-
-    /**
-     * Abre la ventana FrmListaLibros.
-     * Se envía el mismo controlador para que la nueva
-     * ventana pueda consultar los libros almacenados.
-     */
-    private void abrirListaLibros() {
-
-        FrmListaLibros ventana =
-                new FrmListaLibros(controller);
-
-        ventana.setVisible(true);
-    }
-
-    // =====================================================
-    // MOSTRAR / OCULTAR BÚSQUEDA
-    // =====================================================
-
-    private void mostrarOcultarBusqueda() {
-
-        boolean visible =
-                panelBusqueda.isVisible();
-
-        if (visible) {
-
-            // Ocultar búsqueda
-            panelBusqueda.setVisible(
-                    false
-            );
-
-            btnMostrarBusqueda.setText(
-                    "Buscar Libro"
-            );
-
-            actualizarVentana();
-
-            // SUBIR AUTOMÁTICAMENTE
-            SwingUtilities.invokeLater(
-                    () -> scrollPrincipal
-                            .getVerticalScrollBar()
-                            .setValue(0)
-            );
-
-        } else {
-
-            // Mostrar búsqueda
-            panelBusqueda.setVisible(
-                    true
-            );
-
-            btnMostrarBusqueda.setText(
-                    "Ocultar Búsqueda"
-            );
-
-            txtBuscarId.setText(
-                    ""
-            );
-
-            panelResultado.setVisible(
-                    false
-            );
-
-            limpiarResultado();
-
-            lblEstadoBusqueda.setText(
-                    "Ingrese un ID para realizar la búsqueda."
-            );
-
-            lblEstadoBusqueda.setForeground(
-                    GRIS
-            );
-
-            actualizarVentana();
-
-            // =================================================
-            // BAJAR AUTOMÁTICAMENTE LA BARRA
-            // =================================================
-
-            SwingUtilities.invokeLater(() -> {
-
-                JScrollBar barra =
-                        scrollPrincipal
-                                .getVerticalScrollBar();
-
-                barra.setValue(
-                        barra.getMaximum()
-                );
-
-                txtBuscarId.requestFocus();
-            });
-        }
-    }
-
-    // =====================================================
-    // REGISTRAR LIBRO
-    // =====================================================
-
-    private void registrarLibro() {
-
-        try {
-
-            // =========================
-            // CAMPOS VACÍOS
-            // =========================
-
-            if (
-                    txtId.getText().trim().isEmpty()
-                            ||
-                    txtTitulo.getText().trim().isEmpty()
-                            ||
-                    txtAutor.getText().trim().isEmpty()
-                            ||
-                    txtCategoria.getText().trim().isEmpty()
-            ) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Debe completar todos los campos.",
-                        "Campos incompletos",
-                        JOptionPane.WARNING_MESSAGE
-                );
-
-                return;
-            }
-
-            // =========================
-            // ID
-            // =========================
-
-            int id =
-                    Integer.parseInt(
-                            txtId
-                                    .getText()
-                                    .trim()
-                    );
-
-            if (id <= 0) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "El ID debe ser mayor que cero.",
-                        "Dato incorrecto",
-                        JOptionPane.WARNING_MESSAGE
-                );
-
-                return;
-            }
-
-            // =========================
-            // DATOS
-            // =========================
-
-            String titulo =
-                    txtTitulo
-                            .getText()
-                            .trim();
-
-            String autor =
-                    txtAutor
-                            .getText()
-                            .trim();
-
-            String categoria =
-                    txtCategoria
-                            .getText()
-                            .trim();
-
-            boolean disponible =
-                    chkDisponible
-                            .isSelected();
-
-            // =========================
-            // CONTROLADOR
-            // =========================
-
-            controller.registrarLibro(
-                    id,
-                    titulo,
-                    autor,
-                    categoria,
-                    disponible
-            );
-
-            // =========================
-            // ÉXITO
-            // =========================
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "El libro fue registrado correctamente.",
-                    "Registro exitoso",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            limpiarCampos();
-
-        } catch (NumberFormatException e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "El ID debe ser un número válido.",
-                    "Dato incorrecto",
-                    JOptionPane.WARNING_MESSAGE
-            );
-
-        } catch (RuntimeException e) {
-
-            // =====================================================
-            // AQUÍ SE MUESTRA EL MENSAJE DEL ID REPETIDO
-            // =====================================================
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    e.getMessage(),
-                    "Error al registrar",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-
-    // =====================================================
-    // BUSCAR LIBRO
-    // =====================================================
-
-    private void buscarLibro() {
-
-        panelResultado.setVisible(
-                false
-        );
-
-        try {
-
-            String textoId =
-                    txtBuscarId
-                            .getText()
-                            .trim();
-
-            // =========================
-            // VACÍO
-            // =========================
-
-            if (textoId.isEmpty()) {
-
-                mostrarEstadoError(
-                        "Debe ingresar el ID del libro."
-                );
-
-                actualizarVentana();
-
-                return;
-            }
-
-            // =========================
-            // CONVERTIR ID
-            // =========================
-
-            int id =
-                    Integer.parseInt(
-                            textoId
-                    );
-
-            if (id <= 0) {
-
-                mostrarEstadoError(
-                        "El ID debe ser mayor que cero."
-                );
-
-                actualizarVentana();
-
-                return;
-            }
-
-            // =========================
-            // BUSCAR
-            // =========================
-
-            Libro libro =
-                    controller.buscarLibro(
-                            id
-                    );
-
-            // =========================
-            // NO ENCONTRADO
-            // =========================
-
-            if (libro == null) {
-
-                limpiarResultado();
-
-                mostrarEstadoError(
-                        "No se encontró un libro con el ID "
-                                + id
-                                + "."
-                );
-
-                actualizarVentana();
-
-                return;
-            }
-
-            // =========================
-            // MOSTRAR DATOS
-            // =========================
-
-            lblResultadoId.setText(
-                    "ID: "
-                            + libro.getId()
-            );
-
-            lblResultadoTitulo.setText(
-                    "Título: "
-                            + libro.getTitulo()
-            );
-
-            lblResultadoAutor.setText(
-                    "Autor: "
-                            + libro.getAutor()
-            );
-
-            lblResultadoCategoria.setText(
-                    "Categoría: "
-                            + libro.getCategoria()
-            );
-
-            lblResultadoDisponible.setText(
-                    "Disponibilidad: "
-                            + (
-                            libro.isDisponible()
-                                    ? "Disponible"
-                                    : "No disponible"
-                    )
-            );
-
-            panelResultado.setVisible(
-                    true
-            );
-
-            lblEstadoBusqueda.setText(
-                    "Libro encontrado correctamente."
-            );
-
-            lblEstadoBusqueda.setForeground(
-                    VERDE
-            );
-
-            actualizarVentana();
-
-            // Cuando aparece el resultado,
-            // mantener visible la parte inferior.
-            SwingUtilities.invokeLater(() -> {
-
-                JScrollBar barra =
-                        scrollPrincipal
-                                .getVerticalScrollBar();
-
-                barra.setValue(
-                        barra.getMaximum()
-                );
-            });
-
-        } catch (NumberFormatException e) {
-
-            mostrarEstadoError(
-                    "El ID debe ser un número válido."
-            );
-
-            actualizarVentana();
-
-        } catch (RuntimeException e) {
-
-            mostrarEstadoError(
-                    "No fue posible realizar la búsqueda."
-            );
-
-            actualizarVentana();
-        }
-    }
-
-    // =====================================================
-    // CREAR CAMPO
+    // CAMPO DE TEXTO
     // =====================================================
 
     private JTextField crearCampo() {
@@ -1381,8 +1048,31 @@ public class FrmLibro extends JFrame {
 
         campo.setPreferredSize(
                 new Dimension(
-                        210,
-                        32
+                        350,
+                        36
+                )
+        );
+
+        campo.setMinimumSize(
+                new Dimension(
+                        350,
+                        36
+                )
+        );
+
+        campo.setBorder(
+                BorderFactory.createCompoundBorder(
+
+                        BorderFactory.createLineBorder(
+                                BORDE
+                        ),
+
+                        new EmptyBorder(
+                                5,
+                                10,
+                                5,
+                                10
+                        )
                 )
         );
 
@@ -1390,7 +1080,7 @@ public class FrmLibro extends JFrame {
     }
 
     // =====================================================
-    // CREAR ETIQUETA
+    // ETIQUETA
     // =====================================================
 
     private JLabel crearEtiqueta(
@@ -1405,95 +1095,6 @@ public class FrmLibro extends JFrame {
                 new Font(
                         "Segoe UI",
                         Font.BOLD,
-                        14
-                )
-        );
-
-        etiqueta.setForeground(
-                TEXTO
-        );
-
-        return etiqueta;
-    }
-
-    // =====================================================
-    // CREAR TÍTULO DE SECCIÓN
-    // =====================================================
-
-    private JLabel crearTituloSeccion(
-            String texto) {
-
-        JLabel titulo =
-                new JLabel(
-                        texto
-                );
-
-        titulo.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        19
-                )
-        );
-
-        titulo.setForeground(
-                AZUL_OSCURO
-        );
-
-        titulo.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        return titulo;
-    }
-
-    // =====================================================
-    // CREAR DESCRIPCIÓN
-    // =====================================================
-
-    private JLabel crearDescripcion(
-            String texto) {
-
-        JLabel descripcion =
-                new JLabel(
-                        texto
-                );
-
-        descripcion.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.PLAIN,
-                        12
-                )
-        );
-
-        descripcion.setForeground(
-                GRIS
-        );
-
-        descripcion.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        return descripcion;
-    }
-
-    // =====================================================
-    // CREAR RESULTADO
-    // =====================================================
-
-    private JLabel crearResultado(
-            String texto) {
-
-        JLabel etiqueta =
-                new JLabel(
-                        texto
-                );
-
-        etiqueta.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.PLAIN,
                         13
                 )
         );
@@ -1502,21 +1103,25 @@ public class FrmLibro extends JFrame {
                 TEXTO
         );
 
+        etiqueta.setPreferredSize(
+                new Dimension(
+                        120,
+                        34
+                )
+        );
+
         return etiqueta;
     }
 
     // =====================================================
-    // CREAR BOTÓN
+    // BOTÓN REGISTRAR
     // =====================================================
 
-    private JButton crearBoton(
-            String texto,
-            Color color,
-            int ancho) {
+    private JButton crearBotonRegistrar() {
 
         JButton boton =
                 new JButton(
-                        texto
+                        "Registrar Libro"
                 );
 
         boton.setFont(
@@ -1528,7 +1133,7 @@ public class FrmLibro extends JFrame {
         );
 
         boton.setBackground(
-                color
+                VERDE
         );
 
         boton.setForeground(
@@ -1549,38 +1154,294 @@ public class FrmLibro extends JFrame {
                 )
         );
 
-        boton.setPreferredSize(
+        Dimension tamano =
                 new Dimension(
-                        ancho,
-                        40
-                )
+                        180,
+                        42
+                );
+
+        boton.setPreferredSize(
+                tamano
+        );
+
+        boton.setMinimumSize(
+                tamano
+        );
+
+        boton.setMaximumSize(
+                tamano
         );
 
         return boton;
     }
 
     // =====================================================
-    // MOSTRAR ERROR
+    // BOTÓN LIMPIAR
     // =====================================================
 
-    private void mostrarEstadoError(
-            String mensaje) {
+    private JButton crearBotonLimpiar() {
 
-        panelResultado.setVisible(
+        JButton boton =
+                new JButton(
+                        "Limpiar Campos"
+                );
+
+        boton.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        13
+                )
+        );
+
+        boton.setBackground(
+                new Color(
+                        245,
+                        247,
+                        249
+                )
+        );
+
+        boton.setForeground(
+                new Color(
+                        75,
+                        85,
+                        95
+                )
+        );
+
+        boton.setFocusPainted(
                 false
         );
 
-        lblEstadoBusqueda.setText(
-                mensaje
-        );
-
-        lblEstadoBusqueda.setForeground(
-                new Color(
-                        180,
-                        65,
-                        65
+        boton.setBorder(
+                BorderFactory.createLineBorder(
+                        BORDE
                 )
         );
+
+        boton.setCursor(
+                new Cursor(
+                        Cursor.HAND_CURSOR
+                )
+        );
+
+        Dimension tamano =
+                new Dimension(
+                        165,
+                        42
+                );
+
+        boton.setPreferredSize(
+                tamano
+        );
+
+        boton.setMinimumSize(
+                tamano
+        );
+
+        boton.setMaximumSize(
+                tamano
+        );
+
+        return boton;
+    }
+
+    // =====================================================
+    // BOTONES DEL MENÚ
+    // =====================================================
+
+    private JButton crearBotonMenu(
+            String texto,
+            boolean activo) {
+
+        JButton boton =
+                new JButton(
+                        texto
+                );
+
+        boton.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        13
+                )
+        );
+
+        boton.setForeground(
+                Color.WHITE
+        );
+
+        boton.setBackground(
+                activo
+                        ? AZUL_ACTIVO
+                        : AZUL_OSCURO
+        );
+
+        boton.setFocusPainted(
+                false
+        );
+
+        boton.setBorderPainted(
+                false
+        );
+
+        boton.setCursor(
+                new Cursor(
+                        Cursor.HAND_CURSOR
+                )
+        );
+
+        boton.setHorizontalAlignment(
+                SwingConstants.CENTER
+        );
+
+        Dimension tamano =
+                new Dimension(
+                        210,
+                        48
+                );
+
+        boton.setPreferredSize(
+                tamano
+        );
+
+        boton.setMinimumSize(
+                tamano
+        );
+
+        boton.setMaximumSize(
+                tamano
+        );
+
+        boton.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        return boton;
+    }
+
+    // =====================================================
+    // REGISTRAR LIBRO
+    // =====================================================
+
+    private void registrarLibro() {
+
+        try {
+
+            // =================================================
+            // VALIDAR CAMPOS VACÍOS
+            // =================================================
+
+            if (
+                    txtId.getText().trim().isEmpty()
+                    ||
+                    txtTitulo.getText().trim().isEmpty()
+                    ||
+                    txtAutor.getText().trim().isEmpty()
+                    ||
+                    txtCategoria.getText().trim().isEmpty()
+            ) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Debe completar todos los campos.",
+                        "Campos incompletos",
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
+
+            // =================================================
+            // VALIDAR ID
+            // =================================================
+
+            int id =
+                    Integer.parseInt(
+                            txtId
+                                    .getText()
+                                    .trim()
+                    );
+
+            if (id <= 0) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El ID debe ser mayor que cero.",
+                        "Dato incorrecto",
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
+
+            // =================================================
+            // OBTENER DATOS
+            // =================================================
+
+            String titulo =
+                    txtTitulo
+                            .getText()
+                            .trim();
+
+            String autor =
+                    txtAutor
+                            .getText()
+                            .trim();
+
+            String categoria =
+                    txtCategoria
+                            .getText()
+                            .trim();
+
+            boolean disponible =
+                    chkDisponible
+                            .isSelected();
+
+            // =================================================
+            // REGISTRAR
+            // =================================================
+
+            controller.registrarLibro(
+                    id,
+                    titulo,
+                    autor,
+                    categoria,
+                    disponible
+            );
+
+            // =================================================
+            // MENSAJE
+            // =================================================
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El libro fue registrado correctamente.",
+                    "Registro exitoso",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            limpiarCampos();
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El ID debe ser un número válido.",
+                    "Dato incorrecto",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+        } catch (RuntimeException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage(),
+                    "Error al registrar",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     // =====================================================
@@ -1589,64 +1450,16 @@ public class FrmLibro extends JFrame {
 
     private void limpiarCampos() {
 
-        txtId.setText(
-                ""
-        );
-
-        txtTitulo.setText(
-                ""
-        );
-
-        txtAutor.setText(
-                ""
-        );
-
-        txtCategoria.setText(
-                ""
-        );
+        txtId.setText("");
+        txtTitulo.setText("");
+        txtAutor.setText("");
+        txtCategoria.setText("");
 
         chkDisponible.setSelected(
                 false
         );
 
         txtId.requestFocus();
-    }
-
-    // =====================================================
-    // LIMPIAR RESULTADO
-    // =====================================================
-
-    private void limpiarResultado() {
-
-        lblResultadoId.setText(
-                "ID: -"
-        );
-
-        lblResultadoTitulo.setText(
-                "Título: -"
-        );
-
-        lblResultadoAutor.setText(
-                "Autor: -"
-        );
-
-        lblResultadoCategoria.setText(
-                "Categoría: -"
-        );
-
-        lblResultadoDisponible.setText(
-                "Disponibilidad: -"
-        );
-    }
-
-    // =====================================================
-    // ACTUALIZAR VENTANA
-    // =====================================================
-
-    private void actualizarVentana() {
-
-        revalidate();
-        repaint();
     }
 
     // =====================================================
@@ -1657,9 +1470,15 @@ public class FrmLibro extends JFrame {
             String[] args) {
 
         SwingUtilities.invokeLater(
-                () ->
-                        new FrmLibro()
-                                .setVisible(true)
+                () -> {
+
+                    FrmLibro ventana =
+                            new FrmLibro();
+
+                    ventana.setVisible(
+                            true
+                    );
+                }
         );
     }
 }
